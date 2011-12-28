@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions.
+ */
+
+/**
+ * Helper function for field info.
+ */
+function ct_simpletest_installed_fields() {
+  return array(
+    'cowsay' => array(
+      'field_name' => 'cowsay',
+      'type' => 'text',
+    ),
+    'character' => array(
+      'field_name' => 'character',
+      'type' => 'list_text',
+      'settings' => array(
+        'allowed_values' => array(
+          'cow' => 'Cow',
+          'vader' => 'Vader',
+          'drupal' => 'Drupal',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_install().
+ */
+function ct_simpletest_install() {
+  $node_type = array(
+    'type' => 'cowpage',
+    'name' => t('Cow Page'),
+    'base' => 'node_content',
+    'description' => t('A page in the style of cowsay.'),
+  );
+  $field_instances = array(
+    'cowsay' => array(
+      'field_name' => 'cowsay',
+      'label' => 'Cow text',
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'text_textfield',
+        'weight' => 1,
+      ),
+    ),
+    'character' => array(
+      'field_name' => 'character',
+      'label' => 'Character type',
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'options_select',
+        'weight' => 2,
+      ),
+    ),
+  );
+
+  // Load defaults and create the content type.
+  $node_type = node_type_set_defaults($node_type);
+  node_type_save($node_type);
+
+  // Create the fields.
+  foreach (ct_simpletest_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  // Create the field instances.
+  foreach ($field_instances as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = 'cowpage';
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function ct_simpletest_uninstall() {
+  // Load all cowpages and delete them.
+  foreach (node_load_multiple(array(), array('type' => 'cowpage')) as $node) {
+    $nids[] = $node->nid; // do it all in one batch for faster results.
+  }
+  if (isset($nids)) {
+    node_delete_multiple($nids);
+  }
+
+  // Load all this cowpage's instances and delete them.
+  $instances = field_info_instances('node', 'cowpage');
+  foreach ($instances as $instance) {
+    field_delete_instance($instance);
+  }
+
+  // Delete the cowpage content type.
+  node_type_delete('cowpage');
+
+  // Delete all the fields.
+  foreach (array_keys(ct_simpletest_installed_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  // Purge deleted data, fields, and instances.
+  field_purge_batch(1000);
+}
