@@ -1,0 +1,4 @@
+name = Cowsay
+description = Cowsay sandbox module
+core = 7.x
+files[] = tests/ct_cowsay.test

@@ -1,4 +1,0 @@
-name = Simpletest Example
-description = An example usage of simpletest for SCUG presentation
-core = 7.x
-files[] = tests/ct_simpletest.test

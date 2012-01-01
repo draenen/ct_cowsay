@@ -8,7 +8,7 @@
 /**
  * Helper function for field info.
  */
-function ct_simpletest_installed_fields() {
+function ct_cowsay_installed_fields() {
   return array(
     'cowsay' => array(
       'field_name' => 'cowsay',
@@ -31,7 +31,7 @@ function ct_simpletest_installed_fields() {
 /**
  * Implements hook_install().
  */
-function ct_simpletest_install() {
+function ct_cowsay_install() {
   $node_type = array(
     'type' => 'cowpage',
     'name' => t('Cow Page'),
@@ -79,7 +79,7 @@ function ct_simpletest_install() {
 /**
  * Implements hook_uninstall().
  */
-function ct_simpletest_uninstall() {
+function ct_cowsay_uninstall() {
   // Load all cowpages and delete them.
   foreach (node_load_multiple(array(), array('type' => 'cowpage')) as $node) {
     $nids[] = $node->nid; // do it all in one batch for faster results.
