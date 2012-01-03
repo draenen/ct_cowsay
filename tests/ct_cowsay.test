@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Automated tests for the ct_cowsay module.
+ */
+
+/**
+ * Implements DrupalWebTestCase.
+ */
+class ctCowsayTestCase extends DrupalWebTestCase {
+  protected $test_user;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Cowsay Test',
+      'description' => 'Ensure that the cow displays correctly.',
+      'group' => 'Cowsay',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp('ct_cowsay');
+
+    $permissions = array(
+      'create cowpage content',
+      'edit any cowpage content',
+      'access content overview',
+    );
+    $this->test_user = $this->drupalCreateUser($permissions);
+
+    $this->drupalLogin($this->test_user);
+  }
+
+  public function testCreateCowsay() {
+    $node = array(
+      'title' => $this->randomName(),
+      'cowsay[und][0][value]' => $this->randomName(),
+    );
+
+    // Go to the node form.
+    $this->drupalGet('node/add/cowsay');
+
+    // Submit the node form.
+    $this->drupalPost(NULL, $node, t('Save'));
+    $this->assertText(t('Cow Page @title has been created.', array('@title' => $node['title'])));
+
+    // Go to the content list.
+    $this->drupalGet('admin/content');
+    $this->assertLink($node['title']);
+
+    // Go to the node.
+    $this->clickLink($node['title']);
+
+    // Make sure the fields are displayed.
+    foreach ($node as $field => $value) {
+      $this->assertText($value);
+    }
+  }
+}
