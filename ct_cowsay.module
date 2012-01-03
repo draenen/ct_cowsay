@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * Implements template_preprocess_field().
+ */
+function ct_cowsay_preprocess_field(&$field) {
+  if ($field['element']['#field_name'] == 'cowsay') {
+    $field['items'][0]['#theme'] = 'cowsay';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ct_cowsay_theme($existing, $type, $theme, $path) {
+  return array(
+    'cowsay' => array(
+      'variables' => array(
+        'markup' => '',
+      ),
+    ),
+  );
+}
+
+/**
+ * Generate output for cowsay.
+ */
+function theme_cowsay($variables) {
+  $cmd = strtr('/usr/games/cowsay "@text"', array('@text' => escapeshellcmd($variables['markup'])));
+  exec($cmd, $lines);
+
+  $cow = '';
+  foreach ($lines as $line) {
+    $cow .= $line . "\n";
+  }
+
+  $output = array(
+    '#theme' => 'html_tag',
+    '#tag' => 'pre',
+    '#value' => $cow,
+  );
+
+  return render($output);
+}

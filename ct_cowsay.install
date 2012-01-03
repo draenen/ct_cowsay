@@ -14,17 +14,6 @@ function ct_cowsay_installed_fields() {
       'field_name' => 'cowsay',
       'type' => 'text',
     ),
-    'character' => array(
-      'field_name' => 'character',
-      'type' => 'list_text',
-      'settings' => array(
-        'allowed_values' => array(
-          'cow' => 'Cow',
-          'vader' => 'Vader',
-          'drupal' => 'Drupal',
-        ),
-      ),
-    ),
   );
 }
 
@@ -48,15 +37,6 @@ function ct_cowsay_install() {
         'weight' => 1,
       ),
     ),
-    'character' => array(
-      'field_name' => 'character',
-      'label' => 'Character type',
-      'required' => TRUE,
-      'widget' => array(
-        'type' => 'options_select',
-        'weight' => 2,
-      ),
-    ),
   );
 
   // Load defaults and create the content type.
@@ -64,7 +44,7 @@ function ct_cowsay_install() {
   node_type_save($node_type);
 
   // Create the fields.
-  foreach (ct_simpletest_installed_fields() as $field) {
+  foreach (ct_cowsay_installed_fields() as $field) {
     field_create_field($field);
   }
 
@@ -98,7 +78,7 @@ function ct_cowsay_uninstall() {
   node_type_delete('cowpage');
 
   // Delete all the fields.
-  foreach (array_keys(ct_simpletest_installed_fields()) as $field) {
+  foreach (array_keys(ct_cowsay_installed_fields()) as $field) {
     field_delete_field($field);
   }
 
